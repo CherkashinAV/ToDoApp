@@ -15,6 +15,10 @@ export class TodoComponent implements OnInit {
   inProgress: Task[] = [];
   done: Task[] = [];
 
+  editable !: boolean;
+  editIndex !: number;
+  editArrType !: string
+
   constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
@@ -28,6 +32,28 @@ export class TodoComponent implements OnInit {
       description: this.todoForm.value.item,
       done: false
     });
+    this.todoForm.reset();
+  }
+
+  deleteTask(i: number, type: string) {
+    type === 'task' ? this.tasks.splice(i, 1) : this.inProgress.splice(i, 1);
+  }
+
+  onEditTask(item: Task, i: number, type: string) {
+    this.todoForm.controls['item'].setValue(item.description);
+    this.editable = true;
+    this.editIndex = i;
+    this.editArrType = type;
+  }
+
+  updateTask(i: number, type: string) {
+    this.deleteTask(i, type);
+    this.addTask();
+    this.editable = false;
+  }
+
+  cancelEditTask() {
+    this.editable = false;
   }
 
   drop (event: CdkDragDrop<Task[]>): void{
